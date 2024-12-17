@@ -8,18 +8,18 @@ function NavSearchBar() {
   const [debouncedSearchTerm, setDebouncedSearchTerm] = useState("");
   const router = useRouter();
 
-  // Debounce the input to minimize API calls
   useEffect(() => {
     const timer = setTimeout(() => {
       setDebouncedSearchTerm(searchTerm.trim());
-    }, 300); // Wait for 300ms after the user stops typing
+    }, 300);
     return () => clearTimeout(timer);
   }, [searchTerm]);
 
-  // Navigate when the debounced search term changes
   useEffect(() => {
     if (debouncedSearchTerm) {
       router.push(`/SearchResult?query=${encodeURIComponent(debouncedSearchTerm)}`);
+    } else {
+      router.push(`/SearchResult`); // Reset to default page
     }
   }, [debouncedSearchTerm, router]);
 

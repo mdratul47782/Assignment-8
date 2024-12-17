@@ -14,6 +14,8 @@ function SearchResult() {
   useEffect(() => {
     if (query) {
       fetchMovies(query);
+    } else {
+      setMovies([]); // Clear previous results when query is empty
     }
   }, [query]);
 
@@ -35,7 +37,9 @@ function SearchResult() {
   return (
     <main className="container mx-auto px-4 pt-24 pb-8">
       <div className="mb-6">
-        <h1 className="text-2xl font-bold">Search Results for `{query}`</h1>
+        <h1 className="text-2xl font-bold">
+          Search Results for `{query || "No query provided"}
+        </h1>
         <p className="text-gray-400">
           {loading ? "Loading..." : `${movies.length} results found`}
         </p>
@@ -50,8 +54,8 @@ function SearchResult() {
             <Image
               src={`https://image.tmdb.org/t/p/w500${movie.poster_path}`}
               alt={movie.title || movie.name}
-              width={300} // Set a specific width
-              height={450} // Set a specific height to maintain aspect ratio (2:3 in this case)
+              width={300}
+              height={450}
               className="rounded-lg object-cover"
             />
             <div className="p-4">
