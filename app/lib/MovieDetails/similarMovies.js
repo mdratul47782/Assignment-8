@@ -1,4 +1,4 @@
-export async function fetchmovieDetails(id) {
+export async function fetchSimilarMovies(id) {
     const options = {
       method: "GET",
       headers: {
@@ -9,15 +9,15 @@ export async function fetchmovieDetails(id) {
   
     try {
       const response = await fetch(
-        `https://api.themoviedb.org/3/movie/${id}`,
+        `https://api.themoviedb.org/3/movie/${id}/similar`,
         options
       );
       if (!response.ok) throw new Error(`Error: ${response.statusText}`);
       const data = await response.json();
-      return data; // Return the complete movie details object
+      return data.results; // Return only the results array
     } catch (error) {
-      console.error("Error fetching movie details:", error);
-      return null; // Return null in case of an error
+      console.error("Error fetching similar movies:", error);
+      return [];
     }
   }
   
