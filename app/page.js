@@ -10,7 +10,7 @@ export default function Home() {
     <div>
       <HeroSection />
       {/* <!-- Movie Sections --> */}
-      <div class="container mx-auto px-4 py-8">
+      <div className="container mx-auto px-4 py-8">
         {/* <!-- Trending Movies --> */}
         <TrendingMovies />
         {/* <!-- Popular Movies --> */}

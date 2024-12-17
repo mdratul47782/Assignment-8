@@ -2,7 +2,11 @@ import { fetchmovieDetails } from "@/app/lib/MovieDetails/movieDetalis";
 import Image from "next/image";
 import dynamic from "next/dynamic";
 import SocialMedia from "./SocialMedia";
-import { Suspense } from 'react';
+import { Suspense } from "react";
+import Cast from "./Cast";
+import AddToWatch from "./AddToWatch";
+import AddedToWatch from "./AddedToWatch";
+
 const SimilarMovies = dynamic(() => import("./SimilarMovies"), {
   suspense: true,
 });
@@ -31,6 +35,8 @@ async function MovieDetails({ id }) {
               fill
               sizes="100vw"
               priority
+              placeholder="blur"
+              blurDataURL={`https://image.tmdb.org/t/p/w300${movie.backdrop_path}`}
             />
             <div className="absolute inset-0 bg-gradient-to-t from-black via-black/70"></div>
           </div>
@@ -45,6 +51,8 @@ async function MovieDetails({ id }) {
                   width={500}
                   height={750}
                   priority
+                  placeholder="blur"
+                  blurDataURL={`https://image.tmdb.org/t/p/w200${movie.poster_path}`}
                 />
               </div>
 
@@ -55,7 +63,7 @@ async function MovieDetails({ id }) {
                   <span className="text-green-500">
                     {new Date(movie.release_date).toLocaleDateString()}
                   </span>
-                  <span>| </span>
+                  <span>|</span>
                   <span>{movie.runtime} min</span>
                 </div>
 
@@ -74,32 +82,11 @@ async function MovieDetails({ id }) {
                     ))}
                   </div>
                 </div>
-
+                <Cast />
                 <div className="mb-6">
                   <div className="flex flex-wrap gap-4">
-                    <div className="text-center">
-                      <button className="flex items-center gap-2 bg-black/40 px-4 py-2 rounded-lg">
-                        <svg
-                          xmlns="http://www.w3.org/2000/svg"
-                          width="24"
-                          height="24"
-                          viewBox="0 0 24 24"
-                          fill="none"
-                          stroke="currentColor"
-                          strokeWidth="2"
-                          strokeLinecap="round"
-                          strokeLinejoin="round"
-                          className="icon icon-tabler icons-tabler-outline icon-tabler-file-plus"
-                        >
-                          <path stroke="none" d="M0 0h24v24H0z" fill="none" />
-                          <path d="M14 3v4a1 1 0 0 0 1 1h4" />
-                          <path d="M17 21h-10a2 2 0 0 1 -2 -2v-14a2 2 0 0 1 2 -2h7l5 5v11a2 2 0 0 1 -2 2z" />
-                          <path d="M12 11l0 6" />
-                          <path d="M9 14l6 0" />
-                        </svg>
-                        Add to Watch List
-                      </button>
-                    </div>
+                    <AddToWatch />
+                    <AddedToWatch />
                   </div>
                 </div>
                 <SocialMedia />

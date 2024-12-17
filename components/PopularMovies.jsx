@@ -1,5 +1,6 @@
 import Image from "next/image";
 import { fetchPopularMovies } from "@/app/lib/HomePageCalles/popularMovies";
+import Link from "next/link";
 
 export default async function PopularMovies() {
   // Fetch popular movies on the server side
@@ -14,7 +15,7 @@ export default async function PopularMovies() {
             key={movie.id}
             className="flex-shrink-0 w-48 cursor-pointer hover:scale-105 transition-transform"
           >
-            <a href={`details/${movie.id}`}>
+            <Link href={`Details/${movie.id}`}>
               <Image
                 width={192}
                 height={288}
@@ -22,7 +23,7 @@ export default async function PopularMovies() {
                 alt={movie.title || "Movie Poster"}
                 className="w-full rounded-lg"
               />
-            </a>
+            </Link>
           </div>
         ))}
       </div>

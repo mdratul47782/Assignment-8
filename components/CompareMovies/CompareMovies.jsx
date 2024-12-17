@@ -3,6 +3,7 @@ import React, { useState, useEffect } from "react";
 import MovieSearchModal from "./MovieSearchModal";
 import { fetchTrendingMovies } from "@/app/lib/HomePageCalles/trendingMovies";
 import { fetchmovieDetails } from "@/app/lib/MovieDetails/movieDetalis";
+
 function CompareMovies() {
   const [movieSlots, setMovieSlots] = useState([{ id: Date.now(), movie: null }]);
   const [isModalOpen, setIsModalOpen] = useState(false);
@@ -35,10 +36,11 @@ function CompareMovies() {
     setIsModalOpen(false);
   };
 
-  const handleSelectMovie = (movie) => {
+  const handleSelectMovie = async (movie) => {
+    const movieDetails = await fetchmovieDetails(movie.id);
     setMovieSlots((prevSlots) =>
       prevSlots.map((slot) =>
-        slot.id === activeSlotId ? { ...slot, movie } : slot
+        slot.id === activeSlotId ? { ...slot, movie: movieDetails } : slot
       )
     );
     closeModal();
@@ -66,7 +68,7 @@ function CompareMovies() {
         {/* Movie Comparison Container */}
         <div className="grid gap-6 md:grid-cols-2">
           {movieSlots.map((slot) => (
-            <div key={slot.id} className="bg-zinc-900 rounded-lg p-4 flex flex-col">
+            <div key={slot.id} className="bg-zinc-900 rounded-lg p-4 flex flex-col min-h-[400px]">
               <div className="flex justify-end mb-4">
                 {movieSlots.length > 1 && (
                   <button
@@ -103,14 +105,34 @@ function CompareMovies() {
                       </span>
                     </div>
                     <div className="bg-zinc-800 p-3 rounded">
+                      <span className="text-gray-400">Runtime:</span>
+                      <span className="float-right">{slot.movie.runtime || "N/A"} min</span>
+                    </div>
+                    <div className="bg-zinc-800 p-3 rounded">
+                      <span className="text-gray-400">Budget:</span>
+                      <span className="float-right">
+                        {slot.movie.budget
+                          ? `$${(slot.movie.budget / 1_000_000).toFixed(1)}M`
+                          : "N/A"}
+                      </span>
+                    </div>
+                    <div className="bg-zinc-800 p-3 rounded">
+                      <span className="text-gray-400">Revenue:</span>
+                      <span className="float-right">
+                        {slot.movie.revenue
+                          ? `$${(slot.movie.revenue / 1_000_000).toFixed(1)}M`
+                          : "N/A"}
+                      </span>
+                    </div>
+                    <div className="bg-zinc-800 p-3 rounded">
                       <span className="text-gray-400">Genres:</span>
                       <div className="mt-2 flex flex-wrap gap-2">
-                        {slot.movie.genre_ids?.map((genre) => (
+                        {slot.movie.genres?.map((genre) => (
                           <span
-                            key={genre}
+                            key={genre.id}
                             className="bg-zinc-700 px-2 py-1 rounded-full text-sm"
                           >
-                            {genre}
+                            {genre.name}
                           </span>
                         ))}
                       </div>
