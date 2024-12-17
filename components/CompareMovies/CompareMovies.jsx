@@ -1,47 +1,57 @@
 "use client";
-import React, { useState } from "react";
-import Image from "next/image";
+import React, { useState, useEffect } from "react";
 import MovieSearchModal from "./MovieSearchModal";
-
+import { fetchTrendingMovies } from "@/app/lib/HomePageCalles/trendingMovies";
+import { fetchmovieDetails } from "@/app/lib/MovieDetails/movieDetalis";
 function CompareMovies() {
-  // Initialize with one movie slot
-  const [movieSlots, setMovieSlots] = useState([
-    { id: Date.now() }, // Initial slot with unique ID
-  ]);
-
-  // State to control modal visibility
+  const [movieSlots, setMovieSlots] = useState([{ id: Date.now(), movie: null }]);
   const [isModalOpen, setIsModalOpen] = useState(false);
+  const [movies, setMovies] = useState([]);
+  const [activeSlotId, setActiveSlotId] = useState(null);
 
-  // Function to handle adding a movie slot
+  // Fetch trending movies on initial render
+  useEffect(() => {
+    const fetchMovies = async () => {
+      const fetchedMovies = await fetchTrendingMovies();
+      setMovies(fetchedMovies);
+    };
+    fetchMovies();
+  }, []);
+
   const addMovieSlot = () => {
-    setMovieSlots([
-      ...movieSlots,
-      {
-        id: Date.now(), // Unique ID for each movie slot
-      },
-    ]);
+    setMovieSlots([...movieSlots, { id: Date.now(), movie: null }]);
   };
 
-  // Function to handle removing a movie slot
   const removeMovieSlot = (id) => {
     setMovieSlots(movieSlots.filter((slot) => slot.id !== id));
   };
 
-  // Function to open the modal
-  const openModal = () => {
+  const openModal = (slotId) => {
+    setActiveSlotId(slotId);
     setIsModalOpen(true);
   };
 
-  // Function to close the modal
   const closeModal = () => {
     setIsModalOpen(false);
   };
 
+  const handleSelectMovie = (movie) => {
+    setMovieSlots((prevSlots) =>
+      prevSlots.map((slot) =>
+        slot.id === activeSlotId ? { ...slot, movie } : slot
+      )
+    );
+    closeModal();
+  };
+
   return (
     <>
-      {/* Pass modal visibility state and close handler to MovieSearchModal */}
-      <MovieSearchModal isOpen={isModalOpen} onClose={closeModal} />
-      
+      <MovieSearchModal
+        isOpen={isModalOpen}
+        onClose={closeModal}
+        movies={movies}
+        onSelectMovie={handleSelectMovie}
+      />
       <main className="container mx-auto px-4 pt-24 pb-8">
         <div className="flex justify-between items-center mb-8">
           <h1 className="text-3xl font-bold">Compare Movies</h1>
@@ -56,12 +66,8 @@ function CompareMovies() {
         {/* Movie Comparison Container */}
         <div className="grid gap-6 md:grid-cols-2">
           {movieSlots.map((slot) => (
-            <div
-              key={slot.id}
-              className="bg-zinc-900 rounded-lg p-4 flex flex-col min-h-[400px]"
-            >
+            <div key={slot.id} className="bg-zinc-900 rounded-lg p-4 flex flex-col">
               <div className="flex justify-end mb-4">
-                {/* Only show remove button if more than one slot exists */}
                 {movieSlots.length > 1 && (
                   <button
                     onClick={() => removeMovieSlot(slot.id)}
@@ -71,14 +77,56 @@ function CompareMovies() {
                   </button>
                 )}
               </div>
-              <div className="flex-grow flex flex-col items-center justify-center">
-                <button
-                  onClick={openModal} // Open modal when clicked
-                  className="bg-zinc-800 text-white px-6 py-3 rounded hover:bg-zinc-700 transition-colors cursor-pointer"
-                >
-                  Select Movie
-                </button>
-              </div>
+              {slot.movie ? (
+                <div className="grid grid-cols-5 gap-8">
+                  <div className="col-span-2 h-full">
+                    <img
+                      src={`https://image.tmdb.org/t/p/original/${slot.movie.poster_path}`}
+                      alt={slot.movie.title || slot.movie.name}
+                      className="w-full rounded-lg mb-4 object-contain max-h-full"
+                    />
+                    <h2 className="text-xl font-bold mb-2 text-center">
+                      {slot.movie.title || slot.movie.name}
+                    </h2>
+                  </div>
+                  <div className="w-full space-y-4 col-span-3">
+                    <div className="bg-zinc-800 p-3 rounded">
+                      <span className="text-gray-400">Rating:</span>
+                      <span className="float-right">{slot.movie.vote_average}/10</span>
+                    </div>
+                    <div className="bg-zinc-800 p-3 rounded">
+                      <span className="text-gray-400">Release Year:</span>
+                      <span className="float-right">
+                        {slot.movie.release_date
+                          ? new Date(slot.movie.release_date).getFullYear()
+                          : "N/A"}
+                      </span>
+                    </div>
+                    <div className="bg-zinc-800 p-3 rounded">
+                      <span className="text-gray-400">Genres:</span>
+                      <div className="mt-2 flex flex-wrap gap-2">
+                        {slot.movie.genre_ids?.map((genre) => (
+                          <span
+                            key={genre}
+                            className="bg-zinc-700 px-2 py-1 rounded-full text-sm"
+                          >
+                            {genre}
+                          </span>
+                        ))}
+                      </div>
+                    </div>
+                  </div>
+                </div>
+              ) : (
+                <div className="flex-grow flex flex-col items-center justify-center">
+                  <button
+                    onClick={() => openModal(slot.id)}
+                    className="bg-zinc-800 text-white px-6 py-3 rounded hover:bg-zinc-700 transition-colors cursor-pointer"
+                  >
+                    Select Movie
+                  </button>
+                </div>
+              )}
             </div>
           ))}
         </div>
