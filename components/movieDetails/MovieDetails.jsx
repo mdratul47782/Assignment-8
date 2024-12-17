@@ -1,7 +1,11 @@
 import { fetchmovieDetails } from "@/app/lib/MovieDetails/movieDetalis";
 import Image from "next/image";
-import SimilarMovies from "./SimilarMovies";
+import dynamic from "next/dynamic";
 import SocialMedia from "./SocialMedia";
+import { Suspense } from 'react';
+const SimilarMovies = dynamic(() => import("./SimilarMovies"), {
+  suspense: true,
+});
 
 async function MovieDetails({ id }) {
   // Fetch movie details on the server side
@@ -24,9 +28,9 @@ async function MovieDetails({ id }) {
               src={`https://image.tmdb.org/t/p/original${movie.backdrop_path}`}
               alt={movie.title}
               className="object-cover"
-              fill // Ensures the image covers the parent container
-              sizes="100vw" // Adjusts sizes for responsive images
-              priority // Optional: Ensures the image is loaded eagerly
+              fill
+              sizes="100vw"
+              priority
             />
             <div className="absolute inset-0 bg-gradient-to-t from-black via-black/70"></div>
           </div>
@@ -38,9 +42,9 @@ async function MovieDetails({ id }) {
                   src={`https://image.tmdb.org/t/p/original${movie.poster_path}`}
                   alt={movie.title}
                   className="rounded-lg shadow-lg object-cover"
-                  width={500} // Adjust width as needed
-                  height={750} // Adjust height to maintain aspect ratio
-                  priority // Optional: Ensures faster loading for key images
+                  width={500}
+                  height={750}
+                  priority
                 />
               </div>
 
@@ -98,13 +102,16 @@ async function MovieDetails({ id }) {
                     </div>
                   </div>
                 </div>
-                <SocialMedia/>
+                <SocialMedia />
               </div>
             </div>
           </div>
         </div>
       </div>
-      <SimilarMovies id={id}/>
+      {/* Lazy-load the SimilarMovies component */}
+      <Suspense fallback={<p>Loading similar movies...</p>}>
+        <SimilarMovies id={id} />
+      </Suspense>
     </>
   );
 }
