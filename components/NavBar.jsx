@@ -11,10 +11,10 @@ function NavBar() {
           </Link>
           <div className="ml-8 space-x-4">
             <Link
-              href="/"
+              href="/login"
               className="text-white hover:text-gray-300"
             >
-              Home
+              Login
             </Link>
             <Link
               href="/CompareMovies"
